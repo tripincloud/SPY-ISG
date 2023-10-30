@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6527025338214776347}
   - component: {fileID: 3300579999654285739}
   m_Layer: 5
-  m_Name: ForLimit
+  m_Name: FunctionLimit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -482,7 +482,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Boucle
+  m_text: Fonction
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -22144,8 +22144,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8507923396146766960}
   m_HandleRect: {fileID: 8507923396146766959}
   m_Direction: 2
-  m_Value: 0.9999926
-  m_Size: 0.7899982
+  m_Value: 0.99999267
+  m_Size: 0.78948045
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
