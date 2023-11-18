@@ -183,6 +183,7 @@ public class CurrentActionManager : FSystem
 			{
 				// always return firstchild of this FunctionControl
 				Debug.Log("In FunctionControl!!!");
+				Application.Quit();
 				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().firstChild, agent);
 			}
 		}

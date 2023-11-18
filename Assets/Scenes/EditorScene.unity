@@ -16701,6 +16701,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1071398015}
     m_Modifications:
+    - target: {fileID: 1548778481028985396, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
+      propertyPath: actionPrefab
+      value: 
+      objectReference: {fileID: 589826222410828797, guid: 1f6f4b81fcfb21141a118d907163d70f,
+        type: 3}
     - target: {fileID: 1948482639149512228, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -16718,6 +16724,11 @@ PrefabInstance:
       objectReference: {fileID: 2049420950}
     - target: {fileID: 1948482639149512228, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
+      propertyPath: m_Delegates.Array.data[3].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2049420950}
+    - target: {fileID: 1948482639149512228, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: beginDragElementFromLibrary
       objectReference: {fileID: 0}
@@ -16730,6 +16741,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: endDragElement
+      objectReference: {fileID: 0}
+    - target: {fileID: 1948482639149512228, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
+      propertyPath: m_Delegates.Array.data[3].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: checkDoubleClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486680562078185576, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
+      propertyPath: m_TrackedObjects.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7114579163603608611, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
+      propertyPath: text
+      value: Execute a function
       objectReference: {fileID: 0}
     - target: {fileID: 8473795893519441262, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
@@ -17544,7 +17570,7 @@ PrefabInstance:
     - target: {fileID: 8507923394757588429, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 362
+      value: 287.2
       objectReference: {fileID: 0}
     - target: {fileID: 8507923394793816419, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
@@ -18829,7 +18855,7 @@ PrefabInstance:
     - target: {fileID: 8507923396146766959, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.34408253
+      value: 0.47961432
       objectReference: {fileID: 0}
     - target: {fileID: 8507923396153194048, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
@@ -18884,7 +18910,7 @@ PrefabInstance:
     - target: {fileID: 8507923396186537706, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 362
+      value: 287.2
       objectReference: {fileID: 0}
     - target: {fileID: 8507923396186537706, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
@@ -35749,7 +35775,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Vue en ligne
+  m_text: Line view
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
