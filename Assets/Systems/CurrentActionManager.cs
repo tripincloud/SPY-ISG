@@ -178,6 +178,13 @@ public class CurrentActionManager : FSystem
 				// always return firstchild of this ForeverControl
 				return rec_getFirstActionOf(action.GetComponent<ForeverControl>().firstChild, agent);
 			}
+			// check if action is a FunctionControl
+			else if (action.GetComponent<FunctionControl>())
+			{
+				// always return firstchild of this FunctionControl
+				Debug.Log("In FunctionControl!!!");
+				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().firstChild, agent);
+			}
 		}
 		return null;
 	}
@@ -219,7 +226,7 @@ public class CurrentActionManager : FSystem
 
 		bool ifok = false;
 		// get absolute target position depending on player orientation and relative direction to observe
-		// On commence par identifier quelle case doit être regardée pour voir si la condition est respectée
+		// On commence par identifier quelle case doit ï¿½tre regardï¿½e pour voir si la condition est respectï¿½e
 		Vector2 vec = new Vector2();
 		switch (agent.GetComponent<Direction>().direction)
 		{
