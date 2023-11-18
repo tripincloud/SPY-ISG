@@ -12,7 +12,6 @@
   </dialogs>
   <blockLimits>
     <blockLimit blockType="Forward" limit="3" />
-    <blockLimit blockType="Function" limit="3"                             />
     <blockLimit blockType="TurnLeft" limit="0" />
     <blockLimit blockType="TurnRight" limit="0" />
     <blockLimit blockType="Wait" limit="0" />

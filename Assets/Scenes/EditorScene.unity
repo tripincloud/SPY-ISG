@@ -17570,7 +17570,7 @@ PrefabInstance:
     - target: {fileID: 8507923394757588429, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 287.2
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 8507923394793816419, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
@@ -18855,7 +18855,7 @@ PrefabInstance:
     - target: {fileID: 8507923396146766959, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.47961432
+      value: 0.3658256
       objectReference: {fileID: 0}
     - target: {fileID: 8507923396153194048, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
@@ -18910,7 +18910,7 @@ PrefabInstance:
     - target: {fileID: 8507923396186537706, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 287.2
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 8507923396186537706, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
@@ -35775,7 +35775,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Line view
+  m_text: Vue en ligne
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
