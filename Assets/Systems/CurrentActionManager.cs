@@ -136,6 +136,13 @@ public class CurrentActionManager : FSystem
 					// this if doesn't contain action or its condition is false => get first action of next action (could be if, for...)
 					return rec_getFirstActionOf(ifCont.next, agent);
 			}
+			// check if action is a FunctionControl
+			else if (action.GetComponent<FunctionControl>())
+			{
+				// add code
+				Debug.Log("ADD CODE HERE");
+				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().next, agent);
+			}
 			// check if action is a WhileControl
 			else if (action.GetComponent<WhileControl>())
 			{
@@ -370,6 +377,12 @@ public class CurrentActionManager : FSystem
 				return current_ba.next;
 			else
 				return getFirstActionOf(current_ba.next, agent);
+		}
+		else if (currentAction.GetComponent<FunctionControl>())
+        {
+			// add code
+			Debug.Log("Add code here");
+			return getFirstActionOf(currentAction.GetComponent<FunctionControl>().next, agent);
 		}
 		else if (currentAction.GetComponent<WhileControl>())
         {
