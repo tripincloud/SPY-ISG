@@ -453,7 +453,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targets:
   - {fileID: 6458784915697038195}
-  - {fileID: 0}
 --- !u!1 &1844801932685815915
 GameObject:
   m_ObjectHideFlags: 0
