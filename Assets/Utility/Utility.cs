@@ -158,7 +158,6 @@ public static class Utility
 	{
 		// On va copier la sequence cr�� par le joueur dans le container de la fen�tre du robot
 		// On commence par cr�er une copie du container ou se trouve la sequence
-		Debug.Log("srcScript:" + srcScript.ToString());
 		GameObject containerCopy = CopyActionsFromAndInitFirstChild(srcScript, false, agentTag);
 		// On copie les actions dedans 
 		for (int i = 0; i < containerCopy.transform.childCount; i++)
@@ -206,7 +205,6 @@ public static class Utility
 	 **/
 	private static GameObject CopyActionsFromAndInitFirstChild(GameObject container, bool isInteractable, string agentTag)
 	{
-		Debug.Log("container: " + container.ToString());
 
 		// On va travailler avec une copy du container
 		GameObject copyGO = GameObject.Instantiate(container);
@@ -221,11 +219,14 @@ public static class Utility
 		}
 
 
+		foreach (FunctionControl funcAct in copyGO.GetComponentsInChildren<FunctionControl>(true))
+		{
+			Debug.Log("0-COMPILATION DE LA FONCTION (chercher le script référence et créer la seconde pile d'exécution)");
+		}
 
 		// Pour chaque bloc for
 		foreach (ForControl forAct in copyGO.GetComponentsInChildren<ForControl>(true))
 		{
-			Debug.Log("in for block");
 			// Si activ�, on note le nombre de tour de boucle � faire
 			if (!isInteractable && !forAct.gameObject.GetComponent<WhileControl>())
 			{

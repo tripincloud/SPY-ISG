@@ -114,7 +114,6 @@ public class CurrentActionManager : FSystem
 	// look for first action recursively, it could be control structure (if, for...)
 	private GameObject rec_getFirstActionOf(GameObject action, GameObject agent)
 	{
-		Debug.Log("in big function");
 		infiniteLoopDetected = exploredScripItem.Contains(action.GetInstanceID());
 		if (action == null || infiniteLoopDetected)
 			return null;
@@ -141,8 +140,8 @@ public class CurrentActionManager : FSystem
 			else if (action.GetComponent<FunctionControl>())
 			{
 				// add code
-				Debug.Log("ADD CODE HERE");
-				return null; //rec_getFirstActionOf(action.GetComponent<FunctionControl>().next, agent);
+				Debug.Log("1-EXECUTION DE LA FONCTION (probablement pas de code, juste faut bidouiller l'élément à être exécuté après au moment de la compilation (cf Utility.cs, fonction CopyActionsFromAndInitFirstChild))");
+				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().next, agent);
 			}
 			// check if action is a WhileControl
 			else if (action.GetComponent<WhileControl>())
@@ -185,14 +184,6 @@ public class CurrentActionManager : FSystem
 			{
 				// always return firstchild of this ForeverControl
 				return rec_getFirstActionOf(action.GetComponent<ForeverControl>().firstChild, agent);
-			}
-			// check if action is a FunctionControl
-			else if (action.GetComponent<FunctionControl>())
-			{
-				// always return firstchild of this FunctionControl
-				Debug.Log("In FunctionControl!!!");
-				Application.Quit();
-				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().firstChild, agent);
 			}
 		}
 		return null;
@@ -382,7 +373,8 @@ public class CurrentActionManager : FSystem
 		else if (currentAction.GetComponent<FunctionControl>())
         {
 			// add code
-			Debug.Log("Add code here");
+			Debug.Log("Dans mes tests actuels on n'arrive jamais ici dans le code, jsais pas à quel point c'est important");
+			Debug.Log("1bis-EXECUTION DE LA FONCTION (probablement pas de code, juste faut bidouiller l'élément à être exécuté après au moment de la compilation (cf Utility.cs, fonction CopyActionsFromAndInitFirstChild))");
 			return getFirstActionOf(currentAction.GetComponent<FunctionControl>().next, agent);
 		}
 		else if (currentAction.GetComponent<WhileControl>())
