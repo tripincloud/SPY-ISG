@@ -337,6 +337,8 @@ public class ScriptGenerator : FSystem {
 				firstContainerBloc = obj.transform.Find("Container");
 				BaseElement func = obj.GetComponent<FunctionControl>();
 
+				Debug.Log("JE SAIS PAS CE QUE çA FAIT LÀ MAIS çA A L'AIR IMPORTANT");
+
 				((FunctionControl)func).functionName = actionNode.Attributes.GetNamedItem("functionName").Value;
 				obj.transform.GetComponentInChildren<TMP_InputField>().text = ((FunctionControl)func).functionName.ToString();
 
