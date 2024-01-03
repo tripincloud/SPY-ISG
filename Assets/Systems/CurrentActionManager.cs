@@ -114,6 +114,7 @@ public class CurrentActionManager : FSystem
 	// look for first action recursively, it could be control structure (if, for...)
 	private GameObject rec_getFirstActionOf(GameObject action, GameObject agent)
 	{
+		Debug.Log("in big function");
 		infiniteLoopDetected = exploredScripItem.Contains(action.GetInstanceID());
 		if (action == null || infiniteLoopDetected)
 			return null;
@@ -141,7 +142,7 @@ public class CurrentActionManager : FSystem
 			{
 				// add code
 				Debug.Log("ADD CODE HERE");
-				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().next, agent);
+				return null; //rec_getFirstActionOf(action.GetComponent<FunctionControl>().next, agent);
 			}
 			// check if action is a WhileControl
 			else if (action.GetComponent<WhileControl>())

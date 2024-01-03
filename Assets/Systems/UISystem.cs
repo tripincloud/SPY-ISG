@@ -325,7 +325,7 @@ public class UISystem : FSystem {
 	}
 
 	// Copie les blocs du panneau d'édition dans le panneau d'exécution
-	private void copyEditableScriptsToExecutablePanels()
+	private void 	copyEditableScriptsToExecutablePanels()
 	{
 		// be sure executable panel is free
 		freePlayerExecutablePanels();
@@ -346,6 +346,7 @@ public class UISystem : FSystem {
 			if (editableContainer != null)
 			{
 				// we fill the executable container with actions of the editable container
+				Debug.Log("booyah: editableContainer: " + editableContainer.ToString() + " ; executableContainer: " + executableContainer.ToString() + " ; robot.tag:" + robot.tag.ToString());
 				Utility.fillExecutablePanel(editableContainer, executableContainer, robot.tag);
 				// bind all child
 				foreach (Transform child in executableContainer.transform)
