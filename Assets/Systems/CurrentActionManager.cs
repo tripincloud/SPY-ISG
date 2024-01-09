@@ -16,6 +16,10 @@ public class CurrentActionManager : FSystem
     private Family f_currentActions = FamilyManager.getFamily(new AllOfComponents(typeof(BasicAction),typeof(LibraryItemRef), typeof(CurrentAction)));
 	private Family f_player = FamilyManager.getFamily(new AllOfComponents(typeof(ScriptRef),typeof(Position)), new AnyOfTags("Player"));
 
+	//ISG2024
+	private Family f_scriptContainer = FamilyManager.getFamily(new AllOfComponents(typeof(UIRootContainer)), new AnyOfTags("ScriptConstructor")); // Les containers de scripts
+	private Family f_viewportContainer = FamilyManager.getFamily(new AllOfComponents(typeof(ViewportContainer))); // Les containers viewport
+	//
 	private Family f_wall = FamilyManager.getFamily(new AllOfComponents(typeof(Position)), new AnyOfTags("Wall"));
 	private Family f_drone = FamilyManager.getFamily(new AllOfComponents(typeof(ScriptRef), typeof(Position)), new AnyOfTags("Drone"));
 	private Family f_door = FamilyManager.getFamily(new AllOfComponents(typeof(ActivationSlot), typeof(Position)), new AnyOfTags("Door"), new AnyOfProperties(PropertyMatcher.PROPERTY.ACTIVE_IN_HIERARCHY));
@@ -136,6 +140,7 @@ public class CurrentActionManager : FSystem
 					// this if doesn't contain action or its condition is false => get first action of next action (could be if, for...)
 					return rec_getFirstActionOf(ifCont.next, agent);
 			}
+			//ISG 2024
 			// check if action is a FunctionControl
 			else if (action.GetComponent<FunctionControl>())
 			{
@@ -372,10 +377,28 @@ public class CurrentActionManager : FSystem
 		}
 		else if (currentAction.GetComponent<FunctionControl>())
         {
-			// add code
-			Debug.Log("Dans mes tests actuels on n'arrive jamais ici dans le code, jsais pas à quel point c'est important");
-			Debug.Log("1bis-EXECUTION DE LA FONCTION (probablement pas de code, juste faut bidouiller l'élément à être exécuté après au moment de la compilation (cf Utility.cs, fonction CopyActionsFromAndInitFirstChild))");
-			return getFirstActionOf(currentAction.GetComponent<FunctionControl>().next, agent);
+			GameObject ScriptContainer = null;
+
+			foreach (GameObject container in f_viewportContainer)
+			{
+				if (container.GetComponentInChildren<UIRootContainer>().scriptName.ToLower() == currentAction.GetComponent<FunctionControl>().functionName.ToLower())
+				{
+					ScriptContainer = container.transform.Find("ScriptContainer").gameObject;
+				}
+			}
+
+			if (ScriptContainer != null)
+			{
+				GameObject containerCopy = CopyActionsFromAndInitFirstChild(ScriptContainer, false, agent.tag);
+				for 
+			}
+			if (currentAction.GetComponent<FunctionControl>().next == null || currentAction.GetComponent<FunctionControl>().next.GetComponent<BasicAction>())
+				return currentAction.GetComponent<FunctionControl>().next;
+			else
+				// add code
+				Debug.Log("Dans mes tests actuels on n'arrive jamais ici dans le code, jsais pas à quel point c'est important");
+				Debug.Log("1bis-EXECUTION DE LA FONCTION (probablement pas de code, juste faut bidouiller l'élément à être exécuté après au moment de la compilation (cf Utility.cs, fonction CopyActionsFromAndInitFirstChild))");
+				return getFirstActionOf(currentAction.GetComponent<FunctionControl>().next, agent);
 		}
 		else if (currentAction.GetComponent<WhileControl>())
         {
