@@ -389,13 +389,44 @@ public class CurrentActionManager : FSystem
 
 			if (ScriptContainer != null)
 			{
-				GameObject containerCopy = CopyActionsFromAndInitFirstChild(ScriptContainer, false, agent.tag);
-				for 
+				GameObject containerCopy = CopyActionsFromAndInitFirstChild(srcScript, false, agent.tag);
+
+				for (int i = 0; i < containerCopy.transform.childCount; i++)
+				{
+					// On ne conserve que les BaseElement et on les nettoie
+					if (containerCopy.transform.GetChild(i).GetComponent<BaseElement>())
+					{
+						Transform child = UnityEngine.GameObject.Instantiate(containerCopy.transform.GetChild(i));
+
+						// remove drop zones
+						foreach (DropZone dropZone in child.GetComponentsInChildren<DropZone>(true))
+						{
+							if (GameObjectManager.isBound(dropZone.gameObject))
+								GameObjectManager.unbind(dropZone.gameObject);
+							dropZone.transform.SetParent(null);
+							GameObject.Destroy(dropZone.gameObject);
+						}
+						//remove empty zones for BaseElements
+						foreach (ReplacementSlot emptyZone in child.GetComponentsInChildren<ReplacementSlot>(true))
+						{
+							if (emptyZone.slotType == ReplacementSlot.SlotType.BaseElement) {
+								if (GameObjectManager.isBound(emptyZone.gameObject))
+									GameObjectManager.unbind(emptyZone.gameObject);
+								emptyZone.transform.SetParent(null);
+								GameObject.Destroy(emptyZone.gameObject);
+							}
+						}
+						child.SetParent(containerCopy.transform, false);
+					}
+				}
+
+				computeNext(containerCopy);
+
+				UnityEngine.Object.Destroy(containerCopy);
+
+				return
 			}
-			if (currentAction.GetComponent<FunctionControl>().next == null || currentAction.GetComponent<FunctionControl>().next.GetComponent<BasicAction>())
-				return currentAction.GetComponent<FunctionControl>().next;
-			else
-				// add code
+
 				Debug.Log("Dans mes tests actuels on n'arrive jamais ici dans le code, jsais pas à quel point c'est important");
 				Debug.Log("1bis-EXECUTION DE LA FONCTION (probablement pas de code, juste faut bidouiller l'élément à être exécuté après au moment de la compilation (cf Utility.cs, fonction CopyActionsFromAndInitFirstChild))");
 				return getFirstActionOf(currentAction.GetComponent<FunctionControl>().next, agent);
