@@ -110,6 +110,7 @@ public class CurrentActionManager : FSystem
 	// get first action inside "action"
 	private GameObject getFirstActionOf(GameObject action, GameObject agent)
     {
+		Debug.Log("getFirstActionOf");
 		exploredScripItem = new HashSet<int>();
 		infiniteLoopDetected = false;
 		return rec_getFirstActionOf(action, agent);
@@ -118,6 +119,7 @@ public class CurrentActionManager : FSystem
 	// look for first action recursively, it could be control structure (if, for...)
 	private GameObject rec_getFirstActionOf(GameObject action, GameObject agent)
 	{
+		Debug.Log("rec_getFirstActionOf");
 		infiniteLoopDetected = exploredScripItem.Contains(action.GetInstanceID());
 		if (action == null || infiniteLoopDetected)
 			return null;
@@ -144,9 +146,8 @@ public class CurrentActionManager : FSystem
 			// check if action is a FunctionControl
 			else if (action.GetComponent<FunctionControl>())
 			{
-				// add code
-				Debug.Log("1-EXECUTION DE LA FONCTION (probablement pas de code, juste faut bidouiller l'élément à être exécuté après au moment de la compilation (cf Utility.cs, fonction CopyActionsFromAndInitFirstChild))");
-				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().next, agent);
+				Debug.Log("1-EXECUTION DE LA FONCTION");
+				return functionCompilation(action, agent);
 			}
 			// check if action is a WhileControl
 			else if (action.GetComponent<WhileControl>())
@@ -346,6 +347,7 @@ public class CurrentActionManager : FSystem
 
 	// one step consists in removing the current actions this frame and adding new CurrentAction components next frame
 	private void onNewStep(){
+		Debug.Log("onNewStep");
 		GameObject nextAction;
 		foreach(GameObject currentActionGO in f_currentActions){
 			CurrentAction currentAction = currentActionGO.GetComponent<CurrentAction>();
@@ -364,8 +366,88 @@ public class CurrentActionManager : FSystem
 		}
 	}
 
+	// ISG 2024
+	private GameObject functionCompilation(GameObject action, GameObject agent){
+		Debug.Log("heyyy : " + action.ToString());
+		Debug.Log(action.GetComponent<FunctionControl>());
+		GameObject ScriptContainer = null;
+		GameObject currentFunction = action; //Utility.FindChildWithComponentByName(action.transform, "CurrentAction");
+		string funcName = action.GetComponent<FunctionNameSystem>().GetFunctionName();
+
+		Debug.Log("function name : " + funcName);
+
+		foreach (GameObject container in f_viewportContainer)
+		{
+			Debug.Log("container name = " + container.GetComponentInChildren<UIRootContainer>().scriptName.ToLower());
+			if (container.GetComponentInChildren<UIRootContainer>().scriptName.ToLower() == funcName)
+			{
+				ScriptContainer = container.transform.Find("ScriptContainer").gameObject;
+			}
+		} 
+		if (ScriptContainer != null)
+		{
+			Debug.Log("SCRIPT NOT NULL BIASH");
+
+			GameObject containerCopy = Utility.CopyActionsFromAndInitFirstChild(ScriptContainer, false, agent.tag);
+
+			for (int i = 0; i < containerCopy.transform.childCount; i++)
+			{
+				// On ne conserve que les BaseElement et on les nettoie
+				if (containerCopy.transform.GetChild(i).GetComponent<BaseElement>())
+				{
+					Transform child = UnityEngine.GameObject.Instantiate(containerCopy.transform.GetChild(i));
+
+					// remove drop zones
+					foreach (DropZone dropZone in child.GetComponentsInChildren<DropZone>(true))
+					{
+						if (GameObjectManager.isBound(dropZone.gameObject))
+							GameObjectManager.unbind(dropZone.gameObject);
+						dropZone.transform.SetParent(null);
+						GameObject.Destroy(dropZone.gameObject);
+					}
+					//remove empty zones for BaseElements
+					foreach (ReplacementSlot emptyZone in child.GetComponentsInChildren<ReplacementSlot>(true))
+					{
+						if (emptyZone.slotType == ReplacementSlot.SlotType.BaseElement) {
+							if (GameObjectManager.isBound(emptyZone.gameObject))
+								GameObjectManager.unbind(emptyZone.gameObject);
+							emptyZone.transform.SetParent(null);
+							GameObject.Destroy(emptyZone.gameObject);
+						}
+					}
+					child.SetParent(containerCopy.transform, false);
+				}
+			}
+
+			Utility.computeNext(containerCopy);
+
+			//UnityEngine.Object.Destroy(containerCopy); ?????????????????????????
+
+			// prendre dernier élément du containerCopy et mettre en next le bloc après le bloc fonction
+
+
+			// renvoyer l'élément suivant (premier bloc de la fonction)
+			if (containerCopy.transform.childCount > 0) {
+				Debug.Log("YAAAAAAAAAAY IT WORKS BIASH");
+				return containerCopy.transform.GetChild(0).gameObject;
+			}
+			else {
+				Debug.Log("NO CHILDREN IN SCRIPT NOOOOOOOOOOO");
+				return currentFunction.GetComponent<FunctionControl>().next;
+			}
+		} else {
+			// IGNORER OU BLOQUER EN RENVOYANT UNE ERREUR
+			Debug.Log("SCRIPT NULL THASAPROBLEM");
+
+			return currentFunction.GetComponent<FunctionControl>().next;
+		}
+		return getFirstActionOf(currentFunction.GetComponent<FunctionControl>().next, agent);
+	}
+
 	// return the next action to execute, return null if no next action available
 	private GameObject getNextAction(GameObject currentAction, GameObject agent){
+		Debug.Log("getNextAction : " + currentAction.ToString());
+		Debug.Log("HAS FUNCTION_CONTROL : "+ (currentAction.GetComponent<FunctionControl>() != null).ToString() );
 		BasicAction current_ba = currentAction.GetComponent<BasicAction>();
 		if (current_ba != null)
 		{
@@ -375,61 +457,10 @@ public class CurrentActionManager : FSystem
 			else
 				return getFirstActionOf(current_ba.next, agent);
 		}
-		else if (currentAction.GetComponent<FunctionControl>())
+		// ISG 2024
+		else if (currentAction.GetComponent<FunctionControl>() != null)
         {
-			GameObject ScriptContainer = null;
-
-			foreach (GameObject container in f_viewportContainer)
-			{
-				if (container.GetComponentInChildren<UIRootContainer>().scriptName.ToLower() == currentAction.GetComponent<FunctionControl>().functionName.ToLower())
-				{
-					ScriptContainer = container.transform.Find("ScriptContainer").gameObject;
-				}
-			}
-
-			if (ScriptContainer != null)
-			{
-				GameObject containerCopy = CopyActionsFromAndInitFirstChild(srcScript, false, agent.tag);
-
-				for (int i = 0; i < containerCopy.transform.childCount; i++)
-				{
-					// On ne conserve que les BaseElement et on les nettoie
-					if (containerCopy.transform.GetChild(i).GetComponent<BaseElement>())
-					{
-						Transform child = UnityEngine.GameObject.Instantiate(containerCopy.transform.GetChild(i));
-
-						// remove drop zones
-						foreach (DropZone dropZone in child.GetComponentsInChildren<DropZone>(true))
-						{
-							if (GameObjectManager.isBound(dropZone.gameObject))
-								GameObjectManager.unbind(dropZone.gameObject);
-							dropZone.transform.SetParent(null);
-							GameObject.Destroy(dropZone.gameObject);
-						}
-						//remove empty zones for BaseElements
-						foreach (ReplacementSlot emptyZone in child.GetComponentsInChildren<ReplacementSlot>(true))
-						{
-							if (emptyZone.slotType == ReplacementSlot.SlotType.BaseElement) {
-								if (GameObjectManager.isBound(emptyZone.gameObject))
-									GameObjectManager.unbind(emptyZone.gameObject);
-								emptyZone.transform.SetParent(null);
-								GameObject.Destroy(emptyZone.gameObject);
-							}
-						}
-						child.SetParent(containerCopy.transform, false);
-					}
-				}
-
-				computeNext(containerCopy);
-
-				UnityEngine.Object.Destroy(containerCopy);
-
-				return
-			}
-
-				Debug.Log("Dans mes tests actuels on n'arrive jamais ici dans le code, jsais pas à quel point c'est important");
-				Debug.Log("1bis-EXECUTION DE LA FONCTION (probablement pas de code, juste faut bidouiller l'élément à être exécuté après au moment de la compilation (cf Utility.cs, fonction CopyActionsFromAndInitFirstChild))");
-				return getFirstActionOf(currentAction.GetComponent<FunctionControl>().next, agent);
+			Debug.Log("Why are we here? Just to suffer?");
 		}
 		else if (currentAction.GetComponent<WhileControl>())
         {

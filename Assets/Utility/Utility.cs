@@ -195,6 +195,29 @@ public static class Utility
 		UnityEngine.Object.Destroy(containerCopy);
 	}
 
+	// ISG 2024
+	public static GameObject FindChildWithComponentByName(Transform parent, string componentName)
+    {
+        foreach (Transform child in parent)
+        {
+            // Check if the child has the specified component
+            if (child.GetComponent(componentName) != null)
+            {
+                return child.gameObject;
+            }
+
+            // Recursively search in the child's hierarchy
+            GameObject childWithComponent = FindChildWithComponentByName(child, componentName);
+            if (childWithComponent != null)
+            {
+                return childWithComponent;
+            }
+        }
+
+        // No child with the specified component found
+        return null;
+    }
+
 	/**
 	 * On copie le container qui contient la sequence d'actions et on initialise les firstChild
 	 * Param:
@@ -203,7 +226,7 @@ public static class Utility
 	 *	agent (GameObject) : L'agent sur qui l'on va copier la sequence (pour d�finir la couleur)
 	 * 
 	 **/
-	private static GameObject CopyActionsFromAndInitFirstChild(GameObject container, bool isInteractable, string agentTag)
+	public static GameObject CopyActionsFromAndInitFirstChild(GameObject container, bool isInteractable, string agentTag)
 	{
 
 		// On va travailler avec une copy du container
@@ -219,9 +242,10 @@ public static class Utility
 		}
 
 
+		// ISG 2024
 		foreach (FunctionControl funcAct in copyGO.GetComponentsInChildren<FunctionControl>(true))
 		{
-			Debug.Log("0-COMPILATION DE LA FONCTION (chercher le script référence et créer la seconde pile d'exécution)");
+			Debug.Log("0-COMPILATION DE LA FONCTION");
 		}
 
 		// Pour chaque bloc for
