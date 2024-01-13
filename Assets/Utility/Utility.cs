@@ -218,6 +218,15 @@ public static class Utility
         return null;
     }
 
+	// ISG 2024
+	public static void DeletePreviousFunctions(){
+		if (FunctionStacksComponent.activeStacks == null) return;
+		foreach (GameObject go in FunctionStacksComponent.activeStacks) {
+			GameObject.Destroy(go);
+		}
+		FunctionStacksComponent.activeStacks = null;
+	}
+
 	/**
 	 * On copie le container qui contient la sequence d'actions et on initialise les firstChild
 	 * Param:
@@ -241,12 +250,11 @@ public static class Utility
 			input.interactable = isInteractable;
 		}
 
-
 		// ISG 2024
 		foreach (FunctionControl funcAct in copyGO.GetComponentsInChildren<FunctionControl>(true))
 		{
 			funcAct.agentTag = agentTag;
-			Debug.Log("0-COMPILATION D'UN BLOC FONCTION");
+			//Debug.Log("0-COMPILATION D'UN BLOC FONCTION");
 		}
 
 		// Pour chaque bloc for

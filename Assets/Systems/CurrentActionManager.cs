@@ -116,7 +116,6 @@ public class CurrentActionManager : FSystem
 	// get first action inside "action"
 	private GameObject getFirstActionOf(GameObject action, GameObject agent)
     {
-		Debug.Log("getFirstActionOf");
 		exploredScripItem = new HashSet<int>();
 		infiniteLoopDetected = false;
 		return rec_getFirstActionOf(action, agent);
@@ -125,7 +124,6 @@ public class CurrentActionManager : FSystem
 	// look for first action recursively, it could be control structure (if, for...)
 	private GameObject rec_getFirstActionOf(GameObject action, GameObject agent)
 	{
-		Debug.Log("rec_getFirstActionOf");
 		infiniteLoopDetected = exploredScripItem.Contains(action.GetInstanceID());
 		if (action == null || infiniteLoopDetected)
 			return null;
@@ -152,7 +150,7 @@ public class CurrentActionManager : FSystem
 			// check if action is a FunctionControl
 			else if (action.GetComponent<FunctionControl>())
 			{
-				Debug.Log("1-EXECUTION DE LA FONCTION");
+				//Debug.Log("1-EXECUTION DE LA FONCTION");
 				return functionCompilation(action, agent);
 			}
 			// check if action is a WhileControl
@@ -353,11 +351,11 @@ public class CurrentActionManager : FSystem
 
 	// one step consists in removing the current actions this frame and adding new CurrentAction components next frame
 	private void onNewStep(){
-		Debug.Log("onNewStep");
 		GameObject nextAction;
 		foreach(GameObject currentActionGO in f_currentActions){
 			CurrentAction currentAction = currentActionGO.GetComponent<CurrentAction>();
 			nextAction = getNextAction(currentActionGO, currentAction.agent);
+			Debug.Log("how many");
 			// check if we reach last action of a drone
 			if (nextAction == null && currentActionGO.GetComponent<CurrentAction>().agent.CompareTag("Drone"))
 				currentActionGO.GetComponent<CurrentAction>().agent.GetComponent<ScriptRef>().scriptFinished = true;
@@ -372,7 +370,7 @@ public class CurrentActionManager : FSystem
 		}
 	}
 
-	// ISG 2024
+	/*// ISG 2024
 	private void pauseCurrentExecution(GameObject action, GameObject executableContainer) {
 		//CurrentAction currentActionComponent = action.GetComponent<CurrentAction>();
 		//if (currentActionComponent != null) currentActionComponent.enabled = false;
@@ -385,17 +383,7 @@ public class CurrentActionManager : FSystem
 			child.SetActive(false);
 		}
 		StackComponent.totalStacks += 1;
-	}
-
-	/*// ISG 2024//////////////////////////////////////////// we'll see later
-	private void resumePreviousExecution(GameObject action, GameObject executableContainer) {
-		action.GetComponent<FunctionControl>().next.AddComponent<CurrentAction>();
-		// Clean robot container
-		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--) {
-			executableContainer.transform.GetChild(i).gameObject.SetActive(true);
-		}
 	}*/
-
 
 	// ISG 2024
 	private void freeDuplicatedExecutablePanel(GameObject executableContainer)
@@ -410,15 +398,11 @@ public class CurrentActionManager : FSystem
 
 	// ISG 2024
 	private GameObject functionCompilation(GameObject action, GameObject agent){
-		Debug.Log("heyyy : " + action.ToString());
-		Debug.Log(action.GetComponent<FunctionControl>());
 		GameObject ScriptContainer = null;
 		GameObject currentFunction = action; //Utility.FindChildWithComponentByName(action.transform, "CurrentAction");
 		string funcName = action.GetComponent<FunctionNameSystem>().GetFunctionName();
 
 		GameObject robot = GameObject.FindWithTag(action.GetComponent<FunctionControl>().agentTag);
-
-		Debug.Log("robot = " + robot.ToString());
 
 		GameObject currentExecutableContainer = robot.GetComponent<ScriptRef>().executableScript.transform.parent.transform.parent.transform.parent.gameObject;
 
@@ -426,17 +410,18 @@ public class CurrentActionManager : FSystem
 		GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer);
 		executableContainerParent.transform.SetParent(currentExecutableContainer.transform.parent);
 
-		GameObject executableContainer = Utility.FindChildObjectWithTag(executableContainerParent.transform, "ScriptConstructor");
-		
+		// add the function execution stack to a list of stacks (to delete them after execution)
+		if (FunctionStacksComponent.activeStacks == null) {
+			FunctionStacksComponent.activeStacks = new List<GameObject>();
+		}
+		FunctionStacksComponent.activeStacks.Add(executableContainerParent);
+
+		GameObject executableContainer = Utility.FindChildObjectWithTag(executableContainerParent.transform, "ScriptConstructor");		
 		freeDuplicatedExecutablePanel(executableContainer);
-
-		pauseCurrentExecution(action, executableContainer);
-
-		Debug.Log("function name : " + funcName);
+		//pauseCurrentExecution(action, executableContainer);
 
 		foreach (GameObject container in f_viewportContainer)
 		{
-			Debug.Log("container name = " + container.GetComponentInChildren<UIRootContainer>().scriptName.ToLower());
 			if (container.GetComponentInChildren<UIRootContainer>().scriptName.ToLower() == funcName)
 			{
 				ScriptContainer = container.transform.Find("ScriptContainer").gameObject;
@@ -444,14 +429,12 @@ public class CurrentActionManager : FSystem
 		} 
 		if (ScriptContainer != null)
 		{
-			Debug.Log("SCRIPT NOT NULL BIASH");
 			Utility.fillExecutablePanel(ScriptContainer, executableContainer, robot.tag);
 			// bind all children
 			foreach (Transform child in executableContainer.transform) GameObjectManager.bind(child.gameObject);
 			
 		} else {
 			// IGNORER OU BLOQUER EN RENVOYANT UNE ERREUR
-			Debug.Log("SCRIPT NULL THASAPROBLEM");
 			return currentFunction.GetComponent<FunctionControl>().next;
 		}
 
@@ -479,15 +462,12 @@ public class CurrentActionManager : FSystem
 			return getFirstActionOf(currentFunction.GetComponent<FunctionControl>().next, agent);
 		} else {
 			lastBloc.GetComponent<BaseElement>().next = currentFunction.GetComponent<FunctionControl>().next;
-			Debug.Log("firstBloc = " + firstBloc.ToString());
 			return getFirstActionOf(firstBloc, agent);
 		}
 	}
 
 	// return the next action to execute, return null if no next action available
 	private GameObject getNextAction(GameObject currentAction, GameObject agent){
-		Debug.Log("getNextAction : " + currentAction.ToString());
-		Debug.Log("HAS FUNCTION_CONTROL : "+ (currentAction.GetComponent<FunctionControl>() != null).ToString() );
 		BasicAction current_ba = currentAction.GetComponent<BasicAction>();
 		if (current_ba != null)
 		{
