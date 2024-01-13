@@ -15,8 +15,8 @@
     <blockLimit blockType="TurnLeft" limit="-1" />
     <blockLimit blockType="TurnRight" limit="-1" />
     <blockLimit blockType="Wait" limit="-1" />
-    <blockLimit blockType="Activate" limit="0" />
-    <blockLimit blockType="TurnBack" limit="0" />
+    <blockLimit blockType="Activate" limit="-1" />
+    <blockLimit blockType="TurnBack" limit="-1" />
     <blockLimit blockType="IfThen" limit="0" />
     <blockLimit blockType="IfElse" limit="0" />
     <blockLimit blockType="ForLoop" limit="0" />
