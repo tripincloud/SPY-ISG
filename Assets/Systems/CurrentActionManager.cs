@@ -368,8 +368,8 @@ public class CurrentActionManager : FSystem
 
 	// ISG 2024
 	private void pauseCurrentExecution(GameObject action, GameObject executableContainer) {
-		CurrentAction currentActionComponent = action.GetComponent<CurrentAction>();
-		if (currentActionComponent != null) currentActionComponent.enabled = false;
+		//CurrentAction currentActionComponent = action.GetComponent<CurrentAction>();
+		//if (currentActionComponent != null) currentActionComponent.enabled = false;
 		int stackNb = StackComponent.totalStacks;
 		// Clean robot container
 		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--) {
@@ -381,14 +381,14 @@ public class CurrentActionManager : FSystem
 		StackComponent.totalStacks += 1;
 	}
 
-	// ISG 2024//////////////////////////////////////////// we'll see later
+	/*// ISG 2024//////////////////////////////////////////// we'll see later
 	private void resumePreviousExecution(GameObject action, GameObject executableContainer) {
 		action.GetComponent<FunctionControl>().next.AddComponent<CurrentAction>();
 		// Clean robot container
 		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--) {
 			executableContainer.transform.GetChild(i).gameObject.SetActive(true);
 		}
-	}
+	}*/
 
 	// ISG 2024
 	private GameObject functionCompilation(GameObject action, GameObject agent){
@@ -420,6 +420,8 @@ public class CurrentActionManager : FSystem
 		{
 			Debug.Log("SCRIPT NOT NULL BIASH");
 			Utility.fillExecutablePanel(ScriptContainer, executableContainer, robot.tag);
+			// bind all children
+			foreach (Transform child in executableContainer.transform) GameObjectManager.bind(child.gameObject);
 			
 		} else {
 			// IGNORER OU BLOQUER EN RENVOYANT UNE ERREUR
@@ -442,8 +444,9 @@ public class CurrentActionManager : FSystem
 		if (lastBloc == null) {
 			return getFirstActionOf(currentFunction.GetComponent<FunctionControl>().next, agent);
 		} else {
-			////////////////////////////// lastBloc has to have its "next" be the component after the function
-			return firstBloc;
+			lastBloc.GetComponent<BaseElement>().next = currentFunction.GetComponent<FunctionControl>().next;
+			Debug.Log("firstBloc = " + firstBloc.ToString());
+			return getFirstActionOf(firstBloc, agent);
 		}
 	}
 
