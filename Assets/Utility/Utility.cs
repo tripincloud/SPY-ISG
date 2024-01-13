@@ -402,6 +402,28 @@ public static class Utility
 		}
 	}
 
+	// ISG 2024
+	public static GameObject FindChildObjectWithTag(Transform parent, string tag)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.CompareTag(tag))
+            {
+                return child.gameObject;
+            }
+
+            // Recursively search in the child's children
+            GameObject foundObject = FindChildObjectWithTag(child, tag);
+
+            if (foundObject != null)
+            {
+                return foundObject;
+            }
+        }
+
+        return null; // Object with the specified tag not found among the children
+    }
+
 	// Transforme une sequence de condition en une chaine de caract�re
 	private static void conditionToStrings(GameObject condition, List<string> chaine)
 	{

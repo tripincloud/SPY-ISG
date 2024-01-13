@@ -4,12 +4,18 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using UnityEngine.UI;
+using FYFY_plugins.PointerManager;
+using System;
+using UnityEngine.EventSystems;
+using TMPro;
 
 /// <summary>
 /// Manage CurrentAction components, parse scripts and define first action, next actions, evaluate boolean expressions (if and while)...
 /// </summary>
 public class CurrentActionManager : FSystem
 {
+	private Family f_agents = FamilyManager.getFamily(new AllOfComponents(typeof(ScriptRef)));
 	private Family f_executionReady = FamilyManager.getFamily(new AllOfComponents(typeof(ExecutablePanelReady)));
 	private Family f_ends = FamilyManager.getFamily(new AllOfComponents(typeof(NewEnd)));
 	private Family f_newStep = FamilyManager.getFamily(new AllOfComponents(typeof(NewStep)));
@@ -397,7 +403,6 @@ public class CurrentActionManager : FSystem
 		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--)
 		{
 			Transform child = executableContainer.transform.GetChild(i);
-			GameObjectManager.unbind(child.gameObject);
 			child.SetParent(null); // beacause destroying is not immediate, we remove this child from its parent, then Unity can take the time he wants to destroy GameObject
 			GameObject.Destroy(child.gameObject);
 		}
@@ -415,12 +420,15 @@ public class CurrentActionManager : FSystem
 
 		Debug.Log("robot = " + robot.ToString());
 
-		GameObject currentExecutableContainer = robot.GetComponent<ScriptRef>().executableScript;
+		GameObject currentExecutableContainer = robot.GetComponent<ScriptRef>().executableScript.transform.parent.transform.parent.transform.parent.gameObject;
 
 		//Resources.Load("Resources/Prefabs/ExecutablePanel") as GameObject
-		GameObject executableContainer = GameObject.Instantiate(currentExecutableContainer);
-		executableContainer.transform.SetParent(currentExecutableContainer.transform.parent);
-		freeDuplicatedExecutablePanel(executableContainer );
+		GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer);
+		executableContainerParent.transform.SetParent(currentExecutableContainer.transform.parent);
+
+		GameObject executableContainer = Utility.FindChildObjectWithTag(executableContainerParent.transform, "ScriptConstructor");
+		
+		freeDuplicatedExecutablePanel(executableContainer);
 
 		pauseCurrentExecution(action, executableContainer);
 
@@ -445,6 +453,14 @@ public class CurrentActionManager : FSystem
 			// IGNORER OU BLOQUER EN RENVOYANT UNE ERREUR
 			Debug.Log("SCRIPT NULL THASAPROBLEM");
 			return currentFunction.GetComponent<FunctionControl>().next;
+		}
+
+		// On harmonise l'affichage de l'UI container des agents
+		foreach (GameObject go in f_agents){
+			LayoutRebuilder.ForceRebuildLayoutImmediate(go.GetComponent<ScriptRef>().executablePanel.GetComponent<RectTransform>());
+			if(go.CompareTag("Player")){				
+				GameObjectManager.setGameObjectState(go.GetComponent<ScriptRef>().executablePanel, true);				
+			}
 		}
 
 		// FIX EXECUTION CONTINUITY

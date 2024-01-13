@@ -56,6 +56,7 @@ public class StepSystem : FSystem {
 
     private void onNewStep(GameObject go)
     {
+        Debug.Log("hey");
         GameObjectManager.removeComponent(go.GetComponent<NewStep>());  
         timeStepCpt = (1 / gameData.gameSpeed_current) + timeStepCpt; // le "+ timeStepCpt" permet de prendre en compte le débordement de temps de la frame précédente
     }
