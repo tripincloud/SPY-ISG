@@ -1,7 +1,11 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// ISG 2024
 public class FunctionControl : ControlElement {
-	// Advice: FYFY component aims to contain only public members (according to Entity-Component-System paradigm).
 	public string functionName;
+	//public GameObject scriptContainer;
+	//public GameObject executableContianer;
+	public string agentTag;
 }
+

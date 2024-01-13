@@ -4,18 +4,28 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using UnityEngine.UI;
+using FYFY_plugins.PointerManager;
+using System;
+using UnityEngine.EventSystems;
+using TMPro;
 
 /// <summary>
 /// Manage CurrentAction components, parse scripts and define first action, next actions, evaluate boolean expressions (if and while)...
 /// </summary>
 public class CurrentActionManager : FSystem
 {
+	private Family f_agents = FamilyManager.getFamily(new AllOfComponents(typeof(ScriptRef)));
 	private Family f_executionReady = FamilyManager.getFamily(new AllOfComponents(typeof(ExecutablePanelReady)));
 	private Family f_ends = FamilyManager.getFamily(new AllOfComponents(typeof(NewEnd)));
 	private Family f_newStep = FamilyManager.getFamily(new AllOfComponents(typeof(NewStep)));
     private Family f_currentActions = FamilyManager.getFamily(new AllOfComponents(typeof(BasicAction),typeof(LibraryItemRef), typeof(CurrentAction)));
 	private Family f_player = FamilyManager.getFamily(new AllOfComponents(typeof(ScriptRef),typeof(Position)), new AnyOfTags("Player"));
 
+	//ISG2024
+	private Family f_scriptContainer = FamilyManager.getFamily(new AllOfComponents(typeof(UIRootContainer)), new AnyOfTags("ScriptConstructor")); // Les containers de scripts
+	private Family f_viewportContainer = FamilyManager.getFamily(new AllOfComponents(typeof(ViewportContainer))); // Les containers viewport
+	//
 	private Family f_wall = FamilyManager.getFamily(new AllOfComponents(typeof(Position)), new AnyOfTags("Wall"));
 	private Family f_drone = FamilyManager.getFamily(new AllOfComponents(typeof(ScriptRef), typeof(Position)), new AnyOfTags("Drone"));
 	private Family f_door = FamilyManager.getFamily(new AllOfComponents(typeof(ActivationSlot), typeof(Position)), new AnyOfTags("Door"), new AnyOfProperties(PropertyMatcher.PROPERTY.ACTIVE_IN_HIERARCHY));
@@ -136,6 +146,13 @@ public class CurrentActionManager : FSystem
 					// this if doesn't contain action or its condition is false => get first action of next action (could be if, for...)
 					return rec_getFirstActionOf(ifCont.next, agent);
 			}
+			//ISG 2024
+			// check if action is a FunctionControl
+			else if (action.GetComponent<FunctionControl>())
+			{
+				//Debug.Log("1-EXECUTION DE LA FONCTION");
+				return functionCompilation(action, agent);
+			}
 			// check if action is a WhileControl
 			else if (action.GetComponent<WhileControl>())
 			{
@@ -177,14 +194,6 @@ public class CurrentActionManager : FSystem
 			{
 				// always return firstchild of this ForeverControl
 				return rec_getFirstActionOf(action.GetComponent<ForeverControl>().firstChild, agent);
-			}
-			// check if action is a FunctionControl
-			else if (action.GetComponent<FunctionControl>())
-			{
-				// always return firstchild of this FunctionControl
-				Debug.Log("In FunctionControl!!!");
-				Application.Quit();
-				return rec_getFirstActionOf(action.GetComponent<FunctionControl>().firstChild, agent);
 			}
 		}
 		return null;
@@ -346,6 +355,7 @@ public class CurrentActionManager : FSystem
 		foreach(GameObject currentActionGO in f_currentActions){
 			CurrentAction currentAction = currentActionGO.GetComponent<CurrentAction>();
 			nextAction = getNextAction(currentActionGO, currentAction.agent);
+			Debug.Log("how many");
 			// check if we reach last action of a drone
 			if (nextAction == null && currentActionGO.GetComponent<CurrentAction>().agent.CompareTag("Drone"))
 				currentActionGO.GetComponent<CurrentAction>().agent.GetComponent<ScriptRef>().scriptFinished = true;
@@ -360,6 +370,102 @@ public class CurrentActionManager : FSystem
 		}
 	}
 
+	/*// ISG 2024
+	private void pauseCurrentExecution(GameObject action, GameObject executableContainer) {
+		//CurrentAction currentActionComponent = action.GetComponent<CurrentAction>();
+		//if (currentActionComponent != null) currentActionComponent.enabled = false;
+		int stackNb = StackComponent.totalStacks;
+		// Clean robot container
+		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--) {
+			GameObject child = executableContainer.transform.GetChild(i).gameObject;
+			StackComponent currentStack = child.AddComponent<StackComponent>();
+			currentStack.stackNumber = stackNb;
+			child.SetActive(false);
+		}
+		StackComponent.totalStacks += 1;
+	}*/
+
+	// ISG 2024
+	private void freeDuplicatedExecutablePanel(GameObject executableContainer)
+	{
+		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--)
+		{
+			Transform child = executableContainer.transform.GetChild(i);
+			child.SetParent(null); // beacause destroying is not immediate, we remove this child from its parent, then Unity can take the time he wants to destroy GameObject
+			GameObject.Destroy(child.gameObject);
+		}
+	}
+
+	// ISG 2024
+	private GameObject functionCompilation(GameObject action, GameObject agent){
+		GameObject ScriptContainer = null;
+		GameObject currentFunction = action; //Utility.FindChildWithComponentByName(action.transform, "CurrentAction");
+		string funcName = action.GetComponent<FunctionNameSystem>().GetFunctionName();
+
+		GameObject robot = GameObject.FindWithTag(action.GetComponent<FunctionControl>().agentTag);
+
+		GameObject currentExecutableContainer = robot.GetComponent<ScriptRef>().executableScript.transform.parent.transform.parent.transform.parent.gameObject;
+
+		//Resources.Load("Resources/Prefabs/ExecutablePanel") as GameObject
+		GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer);
+		executableContainerParent.transform.SetParent(currentExecutableContainer.transform.parent);
+
+		// add the function execution stack to a list of stacks (to delete them after execution)
+		if (FunctionStacksComponent.activeStacks == null) {
+			FunctionStacksComponent.activeStacks = new List<GameObject>();
+		}
+		FunctionStacksComponent.activeStacks.Add(executableContainerParent);
+
+		GameObject executableContainer = Utility.FindChildObjectWithTag(executableContainerParent.transform, "ScriptConstructor");		
+		freeDuplicatedExecutablePanel(executableContainer);
+		//pauseCurrentExecution(action, executableContainer);
+
+		foreach (GameObject container in f_viewportContainer)
+		{
+			if (container.GetComponentInChildren<UIRootContainer>().scriptName.ToLower() == funcName)
+			{
+				ScriptContainer = container.transform.Find("ScriptContainer").gameObject;
+			}
+		} 
+		if (ScriptContainer != null)
+		{
+			Utility.fillExecutablePanel(ScriptContainer, executableContainer, robot.tag);
+			// bind all children
+			foreach (Transform child in executableContainer.transform) GameObjectManager.bind(child.gameObject);
+			
+		} else {
+			// IGNORER OU BLOQUER EN RENVOYANT UNE ERREUR
+			return currentFunction.GetComponent<FunctionControl>().next;
+		}
+
+		// On harmonise l'affichage de l'UI container des agents
+		foreach (GameObject go in f_agents){
+			LayoutRebuilder.ForceRebuildLayoutImmediate(go.GetComponent<ScriptRef>().executablePanel.GetComponent<RectTransform>());
+			if(go.CompareTag("Player")){				
+				GameObjectManager.setGameObjectState(go.GetComponent<ScriptRef>().executablePanel, true);				
+			}
+		}
+
+		// FIX EXECUTION CONTINUITY
+		GameObject lastBloc = null;
+		GameObject firstBloc = null;
+
+		int blocCount = executableContainer.transform.childCount;
+        for (int i=0; i<blocCount; i++){
+			Transform child = executableContainer.transform.GetChild(i);
+            if (child.gameObject.GetComponent<StackComponent>() == null){
+				lastBloc = child.gameObject;
+				if (firstBloc == null) firstBloc = child.gameObject;
+			}
+        }
+		if (lastBloc == null) {
+			return getFirstActionOf(currentFunction.GetComponent<FunctionControl>().next, agent);
+		} else {
+			lastBloc.GetComponent<BaseElement>().next = currentFunction.GetComponent<FunctionControl>().next;
+			return getFirstActionOf(firstBloc, agent);
+		}
+	}
+
 	// return the next action to execute, return null if no next action available
 	private GameObject getNextAction(GameObject currentAction, GameObject agent){
 		BasicAction current_ba = currentAction.GetComponent<BasicAction>();
@@ -370,6 +476,11 @@ public class CurrentActionManager : FSystem
 				return current_ba.next;
 			else
 				return getFirstActionOf(current_ba.next, agent);
+		}
+		// ISG 2024
+		else if (currentAction.GetComponent<FunctionControl>() != null)
+        {
+			Debug.Log("Why are we here? Just to suffer?");
 		}
 		else if (currentAction.GetComponent<WhileControl>())
         {

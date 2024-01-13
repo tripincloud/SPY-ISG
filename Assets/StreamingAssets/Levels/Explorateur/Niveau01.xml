@@ -10,18 +10,18 @@
 	<dialog text="[fr]Ramasse toutes les pièces.[/fr][en]Collect all the coins.[/en]" />
   </dialogs>
   <blockLimits>
-    <blockLimit blockType="Forward" limit="1" />
-    <blockLimit blockType="Function" limit="4" />
-    <blockLimit blockType="TurnLeft" limit="4" />
+    <blockLimit blockType="Forward" limit="-1" />
+    <blockLimit blockType="Function" limit="-1" />
+    <blockLimit blockType="TurnLeft" limit="-1" />
     <blockLimit blockType="TurnRight" limit="-1" />
-    <blockLimit blockType="Wait" limit="3" />
-    <blockLimit blockType="Activate" limit="0" />
-    <blockLimit blockType="TurnBack" limit="0" />
+    <blockLimit blockType="Wait" limit="-1" />
+    <blockLimit blockType="Activate" limit="-1" />
+    <blockLimit blockType="TurnBack" limit="-1" />
     <blockLimit blockType="IfThen" limit="0" />
     <blockLimit blockType="IfElse" limit="0" />
-    <blockLimit blockType="ForLoop" limit="1" />
+    <blockLimit blockType="ForLoop" limit="0" />
     <blockLimit blockType="While" limit="0" />
-    <blockLimit blockType="Forever" limit="2" />
+    <blockLimit blockType="Forever" limit="0" />
     <blockLimit blockType="AndOperator" limit="0" />
     <blockLimit blockType="OrOperator" limit="0" />
     <blockLimit blockType="NotOperator" limit="0" />

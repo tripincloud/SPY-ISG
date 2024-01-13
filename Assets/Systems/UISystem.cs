@@ -233,6 +233,9 @@ public class UISystem : FSystem {
 		if (gameData.actionsHistory != null)
 			foreach (GameObject trash in f_removeButton)
 				trash.GetComponent<Button>().interactable = false;
+		if (!value) {
+			Utility.DeletePreviousFunctions();
+		}
 	}
 
 	// Permet de relancer le niveau au début
