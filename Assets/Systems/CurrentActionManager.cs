@@ -376,7 +376,7 @@ public class CurrentActionManager : FSystem
 			GameObject child = executableContainer.transform.GetChild(i).gameObject;
 			StackComponent currentStack = child.AddComponent<StackComponent>();
 			currentStack.stackNumber = stackNb;
-			//child.SetActive(false);
+			child.SetActive(false);
 		}
 		StackComponent.totalStacks += 1;
 	}
@@ -390,6 +390,19 @@ public class CurrentActionManager : FSystem
 		}
 	}*/
 
+
+	// ISG 2024
+	private void freeDuplicatedExecutablePanel(GameObject executableContainer)
+	{
+		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--)
+		{
+			Transform child = executableContainer.transform.GetChild(i);
+			GameObjectManager.unbind(child.gameObject);
+			child.SetParent(null); // beacause destroying is not immediate, we remove this child from its parent, then Unity can take the time he wants to destroy GameObject
+			GameObject.Destroy(child.gameObject);
+		}
+	}
+
 	// ISG 2024
 	private GameObject functionCompilation(GameObject action, GameObject agent){
 		Debug.Log("heyyy : " + action.ToString());
@@ -402,7 +415,12 @@ public class CurrentActionManager : FSystem
 
 		Debug.Log("robot = " + robot.ToString());
 
-		GameObject executableContainer = robot.GetComponent<ScriptRef>().executableScript;
+		GameObject currentExecutableContainer = robot.GetComponent<ScriptRef>().executableScript;
+
+		//Resources.Load("Resources/Prefabs/ExecutablePanel") as GameObject
+		GameObject executableContainer = GameObject.Instantiate(currentExecutableContainer);
+		executableContainer.transform.SetParent(currentExecutableContainer.transform.parent);
+		freeDuplicatedExecutablePanel(executableContainer );
 
 		pauseCurrentExecution(action, executableContainer);
 

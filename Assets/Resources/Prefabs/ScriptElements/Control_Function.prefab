@@ -470,7 +470,10 @@ MonoBehaviour:
   highlightedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   next: {fileID: 0}
   firstChild: {fileID: 0}
+  scriptPrefab: {fileID: 985497467624145033, guid: d42c745e2345fd4488c7797ccd137438,
+    type: 3}
   functionName: 
+  agentTag: 
 --- !u!114 &2432155625043230628
 MonoBehaviour:
   m_ObjectHideFlags: 0
