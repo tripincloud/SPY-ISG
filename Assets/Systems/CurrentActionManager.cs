@@ -367,12 +367,44 @@ public class CurrentActionManager : FSystem
 	}
 
 	// ISG 2024
+	private void pauseCurrentExecution(GameObject action, GameObject executableContainer) {
+		CurrentAction currentActionComponent = action.GetComponent<CurrentAction>();
+		if (currentActionComponent != null) currentActionComponent.enabled = false;
+		int stackNb = StackComponent.totalStacks;
+		// Clean robot container
+		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--) {
+			GameObject child = executableContainer.transform.GetChild(i).gameObject;
+			StackComponent currentStack = child.AddComponent<StackComponent>();
+			currentStack.stackNumber = stackNb;
+			//child.SetActive(false);
+		}
+		StackComponent.totalStacks += 1;
+	}
+
+	// ISG 2024//////////////////////////////////////////// we'll see later
+	private void resumePreviousExecution(GameObject action, GameObject executableContainer) {
+		action.GetComponent<FunctionControl>().next.AddComponent<CurrentAction>();
+		// Clean robot container
+		for (int i = executableContainer.transform.childCount - 1; i >= 0; i--) {
+			executableContainer.transform.GetChild(i).gameObject.SetActive(true);
+		}
+	}
+
+	// ISG 2024
 	private GameObject functionCompilation(GameObject action, GameObject agent){
 		Debug.Log("heyyy : " + action.ToString());
 		Debug.Log(action.GetComponent<FunctionControl>());
 		GameObject ScriptContainer = null;
 		GameObject currentFunction = action; //Utility.FindChildWithComponentByName(action.transform, "CurrentAction");
 		string funcName = action.GetComponent<FunctionNameSystem>().GetFunctionName();
+
+		GameObject robot = GameObject.FindWithTag(action.GetComponent<FunctionControl>().agentTag);
+
+		Debug.Log("robot = " + robot.ToString());
+
+		GameObject executableContainer = robot.GetComponent<ScriptRef>().executableScript;
+
+		pauseCurrentExecution(action, executableContainer);
 
 		Debug.Log("function name : " + funcName);
 
@@ -387,69 +419,32 @@ public class CurrentActionManager : FSystem
 		if (ScriptContainer != null)
 		{
 			Debug.Log("SCRIPT NOT NULL BIASH");
-
-			GameObject containerCopy = Utility.CopyActionsFromAndInitFirstChild(ScriptContainer, false, agent.tag);
-
-			////////////////////////////////////////////////////////////////
-			for (int i = 0; i < containerCopy.transform.childCount; i++)
-			{
-				// On ne conserve que les BaseElement et on les nettoie
-				if (containerCopy.transform.GetChild(i).GetComponent<BaseElement>())
-				{
-					Debug.Log("start of iteration " + i.ToString());
-					Transform child = UnityEngine.GameObject.Instantiate(containerCopy.transform.GetChild(i));
-
-					Debug.Log(child.ToString() + ": foreach (DropZone");
-					// remove drop zones
-					foreach (DropZone dropZone in child.GetComponentsInChildren<DropZone>(true))
-					{
-						if (GameObjectManager.isBound(dropZone.gameObject))
-							GameObjectManager.unbind(dropZone.gameObject);
-						dropZone.transform.SetParent(null);
-						GameObject.Destroy(dropZone.gameObject);
-					}
-
-					Debug.Log(child.ToString() + ": foreach (ReplacementSlot");
-					//remove empty zones for BaseElements
-					foreach (ReplacementSlot emptyZone in child.GetComponentsInChildren<ReplacementSlot>(true))
-					{
-						if (emptyZone.slotType == ReplacementSlot.SlotType.BaseElement) {
-							if (GameObjectManager.isBound(emptyZone.gameObject))
-								GameObjectManager.unbind(emptyZone.gameObject);
-							emptyZone.transform.SetParent(null);
-							GameObject.Destroy(emptyZone.gameObject);
-						}
-					}
-
-					Debug.Log(child.ToString() + ": child.SetParent");
-					child.SetParent(containerCopy.transform, false);
-				}
-			}
-			////////////////////////////////////////////////////////////////  
-
-			Utility.computeNext(containerCopy);
-
-			//UnityEngine.Object.Destroy(containerCopy); ?????????????????????????
-
-			// prendre dernier élément du containerCopy et mettre en next le bloc après le bloc fonction
-
-
-			// renvoyer l'élément suivant (premier bloc de la fonction)
-			if (containerCopy.transform.childCount > 0) {
-				Debug.Log("YAAAAAAAAAAY IT WORKS BIASH");
-				return containerCopy.transform.GetChild(0).gameObject;
-			}
-			else {
-				Debug.Log("NO CHILDREN IN SCRIPT NOOOOOOOOOOO");
-				return currentFunction.GetComponent<FunctionControl>().next;
-			}
+			Utility.fillExecutablePanel(ScriptContainer, executableContainer, robot.tag);
+			
 		} else {
 			// IGNORER OU BLOQUER EN RENVOYANT UNE ERREUR
 			Debug.Log("SCRIPT NULL THASAPROBLEM");
-
 			return currentFunction.GetComponent<FunctionControl>().next;
 		}
-		return getFirstActionOf(currentFunction.GetComponent<FunctionControl>().next, agent);
+
+		// FIX EXECUTION CONTINUITY
+		GameObject lastBloc = null;
+		GameObject firstBloc = null;
+
+		int blocCount = executableContainer.transform.childCount;
+        for (int i=0; i<blocCount; i++){
+			Transform child = executableContainer.transform.GetChild(i);
+            if (child.gameObject.GetComponent<StackComponent>() == null){
+				lastBloc = child.gameObject;
+				if (firstBloc == null) firstBloc = child.gameObject;
+			}
+        }
+		if (lastBloc == null) {
+			return getFirstActionOf(currentFunction.GetComponent<FunctionControl>().next, agent);
+		} else {
+			////////////////////////////// lastBloc has to have its "next" be the component after the function
+			return firstBloc;
+		}
 	}
 
 	// return the next action to execute, return null if no next action available

@@ -245,6 +245,7 @@ public static class Utility
 		// ISG 2024
 		foreach (FunctionControl funcAct in copyGO.GetComponentsInChildren<FunctionControl>(true))
 		{
+			funcAct.agentTag = agentTag;
 			Debug.Log("0-COMPILATION D'UN BLOC FONCTION");
 		}
 
