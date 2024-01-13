@@ -390,13 +390,16 @@ public class CurrentActionManager : FSystem
 
 			GameObject containerCopy = Utility.CopyActionsFromAndInitFirstChild(ScriptContainer, false, agent.tag);
 
+			////////////////////////////////////////////////////////////////
 			for (int i = 0; i < containerCopy.transform.childCount; i++)
 			{
 				// On ne conserve que les BaseElement et on les nettoie
 				if (containerCopy.transform.GetChild(i).GetComponent<BaseElement>())
 				{
+					Debug.Log("start of iteration " + i.ToString());
 					Transform child = UnityEngine.GameObject.Instantiate(containerCopy.transform.GetChild(i));
 
+					Debug.Log(child.ToString() + ": foreach (DropZone");
 					// remove drop zones
 					foreach (DropZone dropZone in child.GetComponentsInChildren<DropZone>(true))
 					{
@@ -405,6 +408,8 @@ public class CurrentActionManager : FSystem
 						dropZone.transform.SetParent(null);
 						GameObject.Destroy(dropZone.gameObject);
 					}
+
+					Debug.Log(child.ToString() + ": foreach (ReplacementSlot");
 					//remove empty zones for BaseElements
 					foreach (ReplacementSlot emptyZone in child.GetComponentsInChildren<ReplacementSlot>(true))
 					{
@@ -415,9 +420,12 @@ public class CurrentActionManager : FSystem
 							GameObject.Destroy(emptyZone.gameObject);
 						}
 					}
+
+					Debug.Log(child.ToString() + ": child.SetParent");
 					child.SetParent(containerCopy.transform, false);
 				}
 			}
+			////////////////////////////////////////////////////////////////  
 
 			Utility.computeNext(containerCopy);
 

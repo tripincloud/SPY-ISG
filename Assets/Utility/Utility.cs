@@ -245,7 +245,7 @@ public static class Utility
 		// ISG 2024
 		foreach (FunctionControl funcAct in copyGO.GetComponentsInChildren<FunctionControl>(true))
 		{
-			Debug.Log("0-COMPILATION DE LA FONCTION");
+			Debug.Log("0-COMPILATION D'UN BLOC FONCTION");
 		}
 
 		// Pour chaque bloc for
