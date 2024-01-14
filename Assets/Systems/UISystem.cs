@@ -101,6 +101,7 @@ public class UISystem : FSystem {
 	// Lors d'une fin d'exécution de séquence, gére les différents éléments à ré-afficher ou si il faut sauvegarder la progression du joueur
 	private void levelFinished(bool state)
 	{
+		// ISG 2024
 		level_restarted = true;
 		// On réaffiche les différents panels pour la création de séquence
 		setExecutionView(false);
