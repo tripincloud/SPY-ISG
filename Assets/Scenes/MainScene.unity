@@ -8505,7 +8505,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15.55
+  m_fontSize: 15.65
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11238,6 +11238,7 @@ GameObject:
   - component: {fileID: 1410401869}
   - component: {fileID: 1410401868}
   - component: {fileID: 1410401872}
+  - component: {fileID: 1410401873}
   m_Layer: 5
   m_Name: MainCanvas
   m_TagString: Untagged
@@ -11433,6 +11434,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1410401873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410401867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662ff04b373c2b14990332745fd54e24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  functionPanelPrefab: {fileID: 985497467624145033, guid: 4d8039c86c9c0c241802855511de164b,
+    type: 3}
 --- !u!1 &1441911244 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5524209409896209819, guid: a17a9084f1812d7448d4aa223934f457,
@@ -20065,6 +20080,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8507923395031889160, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8507923395042348635, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -20817,7 +20837,17 @@ PrefabInstance:
       objectReference: {fileID: 361349218}
     - target: {fileID: 8507923396129654677, guid: 3dce7a0df7989214ea5dbb548f234c1c,
         type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8507923396129654677, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8507923396129654677, guid: 3dce7a0df7989214ea5dbb548f234c1c,
+        type: 3}
+      propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8507923396146766959, guid: 3dce7a0df7989214ea5dbb548f234c1c,

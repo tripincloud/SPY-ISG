@@ -38,6 +38,7 @@ public class UISystem : FSystem {
 	private GameData gameData;
 
 	private float touchUp;
+	private bool level_restarted;
 	private Coroutine viewCurrentAction = null;
 
 	public GameObject LevelGO;
@@ -100,6 +101,7 @@ public class UISystem : FSystem {
 	// Lors d'une fin d'exécution de séquence, gére les différents éléments à ré-afficher ou si il faut sauvegarder la progression du joueur
 	private void levelFinished(bool state)
 	{
+		level_restarted = true;
 		// On réaffiche les différents panels pour la création de séquence
 		setExecutionView(false);
 
@@ -208,6 +210,10 @@ public class UISystem : FSystem {
 
 	// On affiche ou non la partie librairie/programmation sequence en fonction de la valeur reçue
 	public void setExecutionView(bool value){
+		if (!value && !level_restarted) {
+			levelFinished(false);
+			return;
+		} else if (value) level_restarted = false;
 		// Toggle library and editable panel
 		GameObjectManager.setGameObjectState(canvas.transform.Find("LeftPanel").gameObject, !value);
 		// Show sentinel panels and toggle player panels

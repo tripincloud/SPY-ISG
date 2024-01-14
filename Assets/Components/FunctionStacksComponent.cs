@@ -5,4 +5,5 @@ using UnityEngine;
 public class FunctionStacksComponent : MonoBehaviour
 {
     public static List<GameObject> activeStacks;
+    public GameObject functionPanelPrefab;
 }

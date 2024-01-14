@@ -407,7 +407,10 @@ public class CurrentActionManager : FSystem
 		GameObject currentExecutableContainer = robot.GetComponent<ScriptRef>().executableScript.transform.parent.transform.parent.transform.parent.gameObject;
 
 		//Resources.Load("Resources/Prefabs/ExecutablePanel") as GameObject
-		GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer);
+		// create the executable panel
+		GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer.GetComponent<FunctionStacksComponent>().functionPanelPrefab);
+		Utility.FindChildObjectWithTag(executableContainerParent.transform, "functionLabel").GetComponent<TMP_InputField>().text = funcName;
+
 		executableContainerParent.transform.SetParent(currentExecutableContainer.transform.parent);
 
 		// add the function execution stack to a list of stacks (to delete them after execution)
@@ -449,6 +452,7 @@ public class CurrentActionManager : FSystem
 		// FIX EXECUTION CONTINUITY
 		GameObject lastBloc = null;
 		GameObject firstBloc = null;
+		
 
 		int blocCount = executableContainer.transform.childCount;
         for (int i=0; i<blocCount; i++){
