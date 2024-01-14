@@ -208,7 +208,7 @@ public class UISystem : FSystem {
 		}
 	}
 
-	// On affiche ou non la partie librairie/programmation sequence en fonction de la valeur reçue
+	// On affiche ou non la partie librairie/programmation sequence en fonction de la valeur reçue 
 	public void setExecutionView(bool value){
 		if (!value && !level_restarted) {
 			levelFinished(false);
