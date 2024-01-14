@@ -410,6 +410,24 @@ public static class Utility
 		}
 	}
 
+	//ISG 2024
+	public static GameObject FindChildByNameFunction(GameObject parent, string childName)
+    {
+        // Find the child GameObject by name
+        Transform childTransform = parent.transform.Find(childName);
+
+        if (childTransform != null)
+        {
+            // Return the child GameObject
+            return childTransform.gameObject;
+        }
+        else
+        {
+            // Return null if the child is not found
+            return null;
+        }
+    }
+
 	// ISG 2024
 	public static GameObject FindChildObjectWithTag(Transform parent, string tag)
     {

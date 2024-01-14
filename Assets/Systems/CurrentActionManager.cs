@@ -408,8 +408,11 @@ public class CurrentActionManager : FSystem
 
 		//Resources.Load("Resources/Prefabs/ExecutablePanel") as GameObject
 		// create the executable panel
-		GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer.GetComponent<FunctionStacksComponent>().functionPanelPrefab);
+		//GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer.GetComponent<FunctionStacksComponent>().functionPanelPrefab);
+		GameObject executableContainerParent = GameObject.Instantiate(currentExecutableContainer);
 		Utility.FindChildObjectWithTag(executableContainerParent.transform, "functionLabel").GetComponent<TMP_InputField>().text = funcName;
+		GameObject textBox = Utility.FindChildByNameFunction(executableContainerParent, "TextAgentNamePresentation");
+		if (textBox != null && textBox.GetComponent<TMP_Text>() != null) textBox.GetComponent<TMP_Text>().text = "Function:";
 
 		executableContainerParent.transform.SetParent(currentExecutableContainer.transform.parent);
 

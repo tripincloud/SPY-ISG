@@ -211,10 +211,11 @@ public class UISystem : FSystem {
 
 	// On affiche ou non la partie librairie/programmation sequence en fonction de la valeur reçue
 	public void setExecutionView(bool value){
-		if (!value && !level_restarted) {
+		if (value) level_restarted = false;
+		else if (!level_restarted) {
 			levelFinished(false);
 			return;
-		} else if (value) level_restarted = false;
+		}
 		// Toggle library and editable panel
 		GameObjectManager.setGameObjectState(canvas.transform.Find("LeftPanel").gameObject, !value);
 		// Show sentinel panels and toggle player panels

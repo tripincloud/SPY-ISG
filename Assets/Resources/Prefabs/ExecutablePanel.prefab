@@ -1314,7 +1314,7 @@ GameObject:
   - component: {fileID: 7188739139271761583}
   m_Layer: 5
   m_Name: locateButton
-  m_TagString: Untagged
+  m_TagString: Finish
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1979,7 +1979,7 @@ GameObject:
   - component: {fileID: 7635785629142652176}
   m_Layer: 5
   m_Name: agentName
-  m_TagString: Untagged
+  m_TagString: functionLabel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
